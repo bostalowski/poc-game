@@ -1,4 +1,6 @@
-// Frank Poth 02/28/2018
+import Engine from './engine'
+import Display from './display'
+import Game from './game'
 
 /* This is the basic setup or "skeleton" of my program. It has three main parts:
 the controller, display, and game logic. It also has an engine which combines the
@@ -11,26 +13,19 @@ comprehensible, maintainable code as well as modularity. */
 /* Since I am loading my scripts dynamically from the rabbit-trap.html, I am wrapping
 my main JavaScript file in a load listener. This ensures that this code will not
 execute until the document has finished loading and I have access to all of my classes. */
-window.addEventListener("load", function(event) {
-
-  "use strict";
-
+window.onload = function(event) {
   ///////////////////
   //// FUNCTIONS ////
   ///////////////////
 
-  var render = function() {
+  const render = function() {
+    display.renderColor(game.color)
+    display.render()
+  }
 
-    display.renderColor(game.color);
-    display.render();
-
-  };
-
-  var update = function() {
-
-    game.update();
-
-  };
+  const update = function() {
+    game.update()
+  }
 
   /////////////////
   //// OBJECTS ////
@@ -42,23 +37,22 @@ window.addEventListener("load", function(event) {
   and instantiate them here. */
 
   /* The controller handles user input. */
-  var controller = new Controller();
-  /* The display handles window resizing, as well as the on screen canvas. */
-  var display    = new Display(document.querySelector("canvas"));
-  /* The game will eventually hold our game logic. */
-  var game       = new Game();
+  // const controller = new Controller()
+  // /* The display handles window resizing, as well as the on screen canvas. */
+  const display = new Display(document.querySelector("canvas"))
+  // /* The game will eventually hold our game logic. */
+  const game = new Game()
   /* The engine is where the above three sections can interact. */
-  var engine     = new Engine(1000/30, render, update);
+  const engine     = new Engine(1000/30, render, update)
 
   ////////////////////
   //// INITIALIZE ////
   ////////////////////
 
-  window.addEventListener("resize",  display.handleResize);
-  window.addEventListener("keydown", controller.handleKeyDownUp);
-  window.addEventListener("keyup",   controller.handleKeyDownUp);
+  window.addEventListener("resize",  display.handleResize)
+  // window.addEventListener("keydown", controller.handleKeyDownUp)
+  // window.addEventListener("keyup",   controller.handleKeyDownUp)
 
-  display.resize();
-  engine.start();
-
-});
+  display.resize()
+  engine.start()
+}
