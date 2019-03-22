@@ -26,7 +26,7 @@ export default class Engine {
   /**
    * This is one cycle of the game loop
    */
-  run(timestamp) {
+  run(timestamp = 0) {
     this.accumulatedTime += timestamp - (this.time !== null ? this.time : 0)
     this.time = timestamp
 
@@ -65,10 +65,12 @@ export default class Engine {
   start() {
     this.accumulatedTime = this.timeStep;
     this.time = window.performance.now();
-    this.requestAnimationFrame = requestAnimationFrame(this.run)
+    this.run()
   }
 
   stop() {
-    cancelAnimationFrame(this.requestAnimationFrame)
+    if (this.requestAnimationFrame) {
+      cancelAnimationFrame(this.requestAnimationFrame)
+    }
   }
 }
