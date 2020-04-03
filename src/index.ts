@@ -14,12 +14,10 @@ comprehensible, maintainable code as well as modularity. */
 /* Since I am loading my scripts dynamically from the rabbit-trap.html, I am wrapping
 my main JavaScript file in a load listener. This ensures that this code will not
 execute until the document has finished loading and I have access to all of my classes. */
-window.onload = event => {
+window.onload = () => {
   ///////////////////
   //// FUNCTIONS ////
   ///////////////////
-
-
 
   /////////////////
   //// OBJECTS ////
@@ -31,27 +29,28 @@ window.onload = event => {
   and instantiate them here. */
 
   /* The controller handles user input. */
-  const controller = new Controller()
+  const controller = Controller()
   // /* The display handles window resizing, as well as the on screen canvas. */
-  const display = new Display(document.querySelector("canvas"))
+  const display = Display(document.querySelector('canvas'))
   // /* The game will eventually hold our game logic. */
-  const game = new Game()
+  const game = Game()
   /* The engine is where the above three sections can interact. */
-  const engine     = new Engine(
-    1000/30, () =>
-    {
-      display.renderColor(game.color)
+  const engine = Engine(
+    1000 / 30,
+    () => {
+      display.renderColor(game.getColor())
       display.render()
     },
-    () => game.update())
+    () => game.update()
+  )
 
   ////////////////////
   //// INITIALIZE ////
   ////////////////////
 
-  window.addEventListener("resize",  display.resize)
-  window.addEventListener("keydown", controller.keyDownUp)
-  window.addEventListener("keyup",   controller.keyDownUp)
+  window.addEventListener('resize', display.resize)
+  window.addEventListener('keydown', controller.keyDownUp)
+  window.addEventListener('keyup', controller.keyDownUp)
 
   display.resize()
   engine.start()
