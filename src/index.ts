@@ -1,7 +1,8 @@
 import Engine from './engine'
-import Display from './display'
+import Display, { Shape } from './display'
 import Game from './game'
 import Controller from './controller'
+import Vector from './tools/vector'
 
 /* This is the basic setup or "skeleton" of my program. It has three main parts:
 the controller, display, and game logic. It also has an engine which combines the
@@ -15,10 +16,6 @@ comprehensible, maintainable code as well as modularity. */
 my main JavaScript file in a load listener. This ensures that this code will not
 execute until the document has finished loading and I have access to all of my classes. */
 window.onload = () => {
-  ///////////////////
-  //// FUNCTIONS ////
-  ///////////////////
-
   /////////////////
   //// OBJECTS ////
   /////////////////
@@ -34,24 +31,79 @@ window.onload = () => {
   const display = Display(document.querySelector('canvas'))
   // /* The game will eventually hold our game logic. */
   const game = Game()
-  /* The engine is where the above three sections can interact. */
-  const engine = Engine(
-    1000 / 30,
-    () => {
-      display.renderColor(game.getColor())
-      display.render()
-    },
-    () => game.update()
-  )
+
+  ///////////////////
+  //// FUNCTIONS ////
+  ///////////////////
+  const onKeyDownUp = (event: KeyboardEvent) => {
+    controller.keyDownUp(event.type, event.code)
+  }
+
+  const resize = () => {
+    display.resize(
+      document.documentElement.clientWidth,
+      document.documentElement.clientHeight
+    )
+
+    const worldWidth = document.documentElement.clientWidth * 0.75
+    const worldHeight = document.documentElement.clientHeight * 0.75
+    const worldX = (document.documentElement.clientWidth - worldWidth) / 2
+    const worldY = (document.documentElement.clientHeight - worldHeight) / 2
+    game.getWorld().setDimensions(worldX, worldY, worldWidth, worldHeight)
+
+    render()
+  }
+
+  const render = () => {
+    // render background
+    display.drawRectangle({
+      x: 0,
+      y: 0,
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight,
+      color: display.getBackgroundColor()
+    })
+
+    // render Game
+    game.render(display.draw)
+
+    display.render()
+  }
+
+  const update = () => {
+    let playerVelocity = Vector(0, 0)
+
+    if (controller.getUpButton().isActive()) {
+      playerVelocity = playerVelocity.addVector(Vector(0, -1))
+    }
+    if (controller.getDownButton().isActive()) {
+      playerVelocity = playerVelocity.addVector(Vector(0, 1))
+    }
+    if (controller.getLeftButton().isActive()) {
+      playerVelocity = playerVelocity.addVector(Vector(-1, 0))
+    }
+    if (controller.getRightButton().isActive()) {
+      playerVelocity = playerVelocity.addVector(Vector(1, 0))
+    }
+    if (controller.getSpaceButton().isActive()) {
+      playerVelocity = playerVelocity.addVector(Vector(0, -15))
+    }
+
+    game.getWorld().getPlayer().addVelocity(playerVelocity)
+    game.update()
+  }
 
   ////////////////////
   //// INITIALIZE ////
   ////////////////////
 
-  window.addEventListener('resize', display.resize)
-  window.addEventListener('keydown', controller.keyDownUp)
-  window.addEventListener('keyup', controller.keyDownUp)
+  /* The engine is where the above three sections can interact. */
+  const engine = Engine(1000 / 30, update, render)
 
-  display.resize()
+  window.addEventListener('resize', resize)
+  window.addEventListener('keydown', onKeyDownUp)
+  window.addEventListener('keyup', onKeyDownUp)
+
+  resize()
   engine.start()
 }

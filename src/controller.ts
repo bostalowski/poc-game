@@ -1,15 +1,16 @@
 const ButtonInput = function () {
-  let mActive = false
-  let mDown = false
+  let isButtonInputActive = false
+  let isButtonInputDown = false
 
   return {
-    getInput: (down: boolean) => {
-      if (mDown !== down) {
-        mActive = down
+    setInput: (isDown: boolean) => {
+      if (isButtonInputDown !== isDown) {
+        isButtonInputActive = isDown
       }
 
-      mDown = down
-    }
+      isButtonInputDown = isDown
+    },
+    isActive: () => isButtonInputActive
   }
 }
 
@@ -18,28 +19,39 @@ const Controller = function () {
   const leftButton = ButtonInput()
   const rightButton = ButtonInput()
   const upButton = ButtonInput()
+  const spaceButton = ButtonInput()
 
-  const keyDownUp = (event: KeyboardEvent) => {
-    const down = event.type === 'keydown'
+  const keyDownUp = (type: string, code: string) => {
+    const isDown = type === 'keydown'
 
-    switch (event.code) {
+    console.log(code)
+
+    switch (code) {
       case 'ArrowLeft':
-        leftButton.getInput(down)
+        leftButton.setInput(isDown)
         break
       case 'ArrowUp':
-        upButton.getInput(down)
+        upButton.setInput(isDown)
         break
       case 'ArrowRight':
-        rightButton.getInput(down)
+        rightButton.setInput(isDown)
         break
       case 'ArrowDown':
-        downButton.getInput(down)
+        downButton.setInput(isDown)
+        break
+      case 'Space':
+        spaceButton.setInput(isDown)
         break
     }
   }
 
   return {
-    keyDownUp
+    keyDownUp,
+    getLeftButton: () => ({ isActive: leftButton.isActive }),
+    getRightButton: () => ({ isActive: rightButton.isActive }),
+    getUpButton: () => ({ isActive: upButton.isActive }),
+    getDownButton: () => ({ isActive: downButton.isActive }),
+    getSpaceButton: () => ({ isActive: spaceButton.isActive })
   }
 }
 
