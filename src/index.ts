@@ -80,10 +80,10 @@ window.onload = () => {
       playerVelocity = playerVelocity.addVector(Vector(0, 1))
     }
     if (controller.getLeftButton().isActive()) {
-      playerVelocity = playerVelocity.addVector(Vector(-1, 0))
+      playerVelocity = playerVelocity.addVector(Vector(-2, 0))
     }
     if (controller.getRightButton().isActive()) {
-      playerVelocity = playerVelocity.addVector(Vector(1, 0))
+      playerVelocity = playerVelocity.addVector(Vector(2, 0))
     }
     if (controller.getSpaceButton().isActive()) {
       playerVelocity = playerVelocity.addVector(Vector(0, -15))
