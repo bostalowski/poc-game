@@ -24,8 +24,6 @@ const Controller = function () {
   const keyDownUp = (type: string, code: string) => {
     const isDown = type === 'keydown'
 
-    console.log(code)
-
     switch (code) {
       case 'ArrowLeft':
         leftButton.setInput(isDown)
