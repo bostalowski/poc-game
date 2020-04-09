@@ -70,7 +70,7 @@ window.onload = () => {
     display.render()
   }
 
-  const update = () => {
+  const update = (timestamp: number) => {
     let playerVelocity = Vector(0, 0)
 
     if (controller.getUpButton().isActive()) {
@@ -90,7 +90,7 @@ window.onload = () => {
     }
 
     game.getWorld().getPlayer().addVelocity(playerVelocity)
-    game.update()
+    game.update(timestamp)
   }
 
   ////////////////////

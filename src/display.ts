@@ -1,6 +1,7 @@
 export enum Shape {
   rectangle = 'Rectangle',
-  circle = 'Circle'
+  circle = 'Circle',
+  sprites = 'Sprites'
 }
 
 interface DrawRectangleMethodProps {
@@ -11,11 +12,23 @@ interface DrawRectangleMethodProps {
   color?: string
 }
 
+interface DrawSpritesMethodProps {
+  sprites: HTMLImageElement
+  sx: number
+  sy: number
+  dx: number
+  dy: number
+  width: number
+  height: number
+  size?: number
+}
+
 export type DrawRectangleMethodType = (props: DrawRectangleMethodProps) => void
+export type DrawSpritesMethodType = (props: DrawSpritesMethodProps) => void
 
 export type DrawMethodType = (
   shape: Shape,
-  values: DrawRectangleMethodProps
+  values: DrawRectangleMethodProps | DrawSpritesMethodProps
 ) => void
 
 /* This Display class contains the screen resize event handler and also handles
@@ -36,9 +49,35 @@ const Display = function (canvas: HTMLCanvasElement) {
     displayBuffer.fillRect(x, y, width, height)
   }
 
+  const drawSprite: DrawSpritesMethodType = ({
+    sprites,
+    sx,
+    sy,
+    dx,
+    dy,
+    width,
+    height,
+    size = 1
+  }) => {
+    displayBuffer.drawImage(
+      sprites,
+      sx,
+      sy,
+      width,
+      height,
+      dx,
+      dy,
+      width * size,
+      height * size
+    )
+  }
+
   const draw: DrawMethodType = (shape, values) => {
     if (shape === Shape.rectangle) {
-      drawRectangle(values)
+      drawRectangle(values as DrawRectangleMethodProps)
+    }
+    if (shape === Shape.sprites) {
+      drawSprite(values as DrawSpritesMethodProps)
     }
   }
 

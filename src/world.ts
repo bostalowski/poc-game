@@ -61,7 +61,7 @@ const World = function () {
     player.setVelocity(playerVelocity)
   }
 
-  const update = () => {
+  const update = (timestamp: number) => {
     // add gravity to player
     player.addVelocity(gravity)
     // add friction
@@ -71,7 +71,7 @@ const World = function () {
     )
     player.setVelocity(playerVelocity)
 
-    player.update()
+    player.update(timestamp)
 
     collidePlayer()
   }
