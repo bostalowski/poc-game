@@ -12,10 +12,18 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: 'file-loader'
+      },
     ],
   },
   resolve: {
-    extensions: [ '.ts', '.js' ],
+    alias: {
+      "@tools": path.resolve(__dirname, 'src/tools/'),
+      "@assets": path.resolve(__dirname, 'assets/')
+    },
+    extensions: [ '.ts', '.js', '.png' ],
   },
   output: {
     filename: 'bundle.js',

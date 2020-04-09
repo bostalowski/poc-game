@@ -4,8 +4,8 @@ import { DrawMethodType } from './display'
 const Game = function () {
   const world = World()
 
-  const update = () => {
-    world.update()
+  const update = (timestamp: number) => {
+    world.update(timestamp)
     return objectInstance()
   }
 

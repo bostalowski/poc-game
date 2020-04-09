@@ -14,12 +14,14 @@ export interface VectorInterface {
   addVector: (vector: VectorInterface) => VectorInterface
 }
 
+export type VectorType = (x: number, y: number) => VectorInterface
+
 const preciseValue = (value: number) =>
   Math.abs(parseFloat(value.toFixed(2))) < 0.1
     ? 0
     : parseFloat(value.toFixed(2))
 
-const Vector = (x: number, y: number) =>
+const Vector: VectorType = (x: number, y: number) =>
   (function (x: number, y: number) {
     const setX = (newX: number) => Vector(newX, y)
     const setY = (newY: number) => Vector(x, newY)

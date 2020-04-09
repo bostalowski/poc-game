@@ -1,12 +1,21 @@
-import Vector, { VectorInterface } from './tools/vector'
+import Vector, { VectorInterface } from '@tools/vector'
+import Sprites from '@tools/sprites'
 import { DrawMethodType, Shape } from './display'
+const IdleSprites = require('../assets/character/idle.png').default
 
 const Player = function (x: number = 0, y: number = 0) {
-  const width = 100
-  const height = 100
-  const color = 'red'
   let position = Vector(x, y)
   let velocity = Vector(0, 0)
+
+  const sprites = Sprites({
+    imagePath: IdleSprites,
+    frameNumber: 12,
+    animationTime: 1000,
+    frameWidth: 21,
+    frameHeight: 36
+  })
+
+  const size = 5
 
   const setPosition = (newPosition: VectorInterface) => {
     position = newPosition
@@ -28,25 +37,35 @@ const Player = function (x: number = 0, y: number = 0) {
     return objectInstance()
   }
 
-  const update = () => {
+  const update = (timestamp: number) => {
     position = position.add(velocity.getX(), velocity.getY())
+    if (sprites.isLoaded() && !sprites.isPlaying()) {
+      sprites.start(timestamp)
+    }
+    sprites.update(timestamp)
     return objectInstance()
   }
 
   const render = (drawMethod: DrawMethodType) => {
-    drawMethod(Shape.rectangle, {
-      x: position.getX(),
-      y: position.getY(),
-      width,
-      height,
-      color
-    })
+    if (sprites.isLoaded()) {
+      drawMethod(Shape.sprites, {
+        sprites: sprites.getImage(),
+        sx: sprites.getSX(),
+        sy: sprites.getSY(),
+        dx: position.getX(),
+        dy: position.getY(),
+        width: sprites.getFrameWidth(),
+        height: sprites.getFrameHeight(),
+        size
+      })
+    }
+
     return objectInstance()
   }
 
   const objectInstance = () => ({
-    getWidth: () => width,
-    getHeight: () => height,
+    getWidth: () => sprites.getFrameWidth() * size,
+    getHeight: () => sprites.getFrameHeight() * size,
     getX: () => position.getX(),
     getY: () => position.getY(),
     getPosition: () => position,
