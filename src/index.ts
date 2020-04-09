@@ -97,7 +97,7 @@ window.onload = () => {
   //// INITIALIZE ////
   ////////////////////
 
-  /* The engine is where the above three sections can interact. */
+  // 1000/30 = ~30 frames per second
   const engine = Engine(1000 / 30, update, render)
 
   window.addEventListener('resize', resize)
