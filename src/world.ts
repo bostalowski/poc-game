@@ -1,4 +1,4 @@
-import Player from './player'
+import Player, { PlayerInterface } from './player'
 import { DrawMethodType, Shape } from './display'
 import Vector, { VectorInterface } from './tools/vector'
 
@@ -9,7 +9,15 @@ export type collideObjectMethodType = (props: {
   height: number
 }) => VectorInterface
 
-const World = function () {
+export type WorldType = () => {
+  getBackgroundColor: () => string
+  setDimensions: (x: number, y: number, width: number, height: number) => void
+  getPlayer: () => PlayerInterface
+  update: (timestamp: number) => void
+  render: (drawMethod: DrawMethodType) => void
+}
+
+const World: WorldType = function () {
   const backgroundColor = 'rgba(40,48,56)'
   const dimensions = {
     x: 0,
@@ -44,7 +52,7 @@ const World = function () {
         dimensions.x - (position.getX() + velocity.getX())
       )
       collideVector = collideVector.addVector(
-        velocity.add(-(velocity.getX() - overflow), 0)
+        Vector(velocity.getX() - (velocity.getX() - overflow), 0)
       )
     }
     if (
@@ -58,7 +66,7 @@ const World = function () {
           (position.getX() + velocity.getX() + width)
       )
       collideVector = collideVector.addVector(
-        velocity.add(-(velocity.getX() + overflow), 0)
+        Vector(velocity.getX() - (velocity.getX() + overflow), 0)
       )
     }
     if (dimensions.y > position.getY() + velocity.getY()) {
@@ -67,7 +75,7 @@ const World = function () {
         dimensions.y - (position.getY() + velocity.getY())
       )
       collideVector = collideVector.addVector(
-        velocity.add(0, -(velocity.getY() - overflow))
+        Vector(0, velocity.getY() - (velocity.getY() - overflow))
       )
     }
     if (
@@ -81,7 +89,7 @@ const World = function () {
           (position.getY() + velocity.getY() + height)
       )
       collideVector = collideVector.addVector(
-        velocity.add(0, -(velocity.getY() + overflow))
+        Vector(0, velocity.getY() - (velocity.getY() + overflow))
       )
     }
 
