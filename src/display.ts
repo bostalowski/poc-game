@@ -21,6 +21,7 @@ interface DrawSpritesMethodProps {
   width: number
   height: number
   size?: number
+  flip?: boolean
 }
 
 export type DrawRectangleMethodType = (props: DrawRectangleMethodProps) => void
@@ -57,19 +58,26 @@ const Display = function (canvas: HTMLCanvasElement) {
     dy,
     width,
     height,
-    size = 1
+    size = 1,
+    flip = false
   }) => {
+    displayBuffer.save()
+    if (flip) {
+      displayBuffer.translate(dx + width * size, dy)
+      displayBuffer.scale(-1, 1)
+    }
     displayBuffer.drawImage(
       sprites,
       sx,
       sy,
       width,
       height,
-      dx,
-      dy,
+      flip ? 0 : dx,
+      flip ? 0 : dy,
       width * size,
       height * size
     )
+    displayBuffer.restore()
   }
 
   const draw: DrawMethodType = (shape, values) => {

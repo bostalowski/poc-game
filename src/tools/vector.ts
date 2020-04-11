@@ -10,6 +10,7 @@ export interface VectorInterface {
   add: (x: number, y: number) => VectorInterface
   subtract: (x: number, y: number) => VectorInterface
   multiply: (value: number) => VectorInterface
+  multiplyBy: (multiplierVector: VectorInterface) => VectorInterface
   divide: (value: number) => VectorInterface
   addVector: (vector: VectorInterface) => VectorInterface
 }
@@ -66,6 +67,10 @@ const Vector: VectorType = (x: number, y: number) =>
       return Vector(x * value, y * value)
     }
 
+    const multiplyBy = (multiplierVector: VectorInterface) => {
+      return Vector(x * multiplierVector.getX(), y * multiplierVector.getY())
+    }
+
     const divide = (value: number) => {
       return Vector(x / value, y / value)
     }
@@ -82,6 +87,7 @@ const Vector: VectorType = (x: number, y: number) =>
       add,
       subtract,
       multiply,
+      multiplyBy,
       divide,
       addVector
     }
