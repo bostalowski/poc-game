@@ -6,10 +6,7 @@ import { collideObjectMethodType } from './world'
 const IdleSprites = require('../assets/sprites/character/idle.png').default
 const RunSprites = require('../assets/sprites/character/run.png').default
 
-export type PlayerType = (
-  x: number,
-  y: number
-) => {
+export interface PlayerInterface {
   getWidth: () => number
   getHeight: () => number
   getX: () => number
@@ -30,6 +27,8 @@ export type PlayerType = (
   render: (drawMethod: DrawMethodType) => void
 }
 
+export type PlayerType = (x: number, y: number) => PlayerInterface
+
 const RUNNING_SPEED = 15
 const JUMPING_SPEED = 100
 
@@ -39,6 +38,9 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
   let direction = Vector(1, 0)
   let isJumping = false
   let isRunning = false
+
+  const width = 105
+  const height = 180
 
   const stances = {
     idle: Sprites({
@@ -120,11 +122,12 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
       const collisionVelocityVector = collideObjectFunction({
         position,
         velocity,
-        width: currentStance.getFrameWidth() * size,
-        height: currentStance.getFrameHeight() * size
+        width,
+        height
       })
       velocity = velocity.addVector(collisionVelocityVector)
     })
+
     position = position.add(velocity.getX(), velocity.getY())
 
     // no inertia
