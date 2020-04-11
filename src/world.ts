@@ -1,6 +1,13 @@
 import Player from './player'
 import { DrawMethodType, Shape } from './display'
-import Vector from './tools/vector'
+import Vector, { VectorInterface } from './tools/vector'
+
+export type collideObjectMethodType = (props: {
+  position: VectorInterface
+  velocity: VectorInterface
+  width: number
+  height: number
+}) => VectorInterface
 
 const World = function () {
   const backgroundColor = 'rgba(40,48,56)'
@@ -10,8 +17,8 @@ const World = function () {
     width: 0,
     height: 0
   }
-  const gravity = Vector(0, 3)
-  const friction = Vector(0.5, 0)
+  const gravityVector = Vector(0, 25)
+  const frictionMultiplierVector = Vector(1, 1)
 
   const player = Player(300, 200)
 
@@ -22,58 +29,72 @@ const World = function () {
     height: number
   ) => {
     Object.assign(dimensions, { x, y, width, height })
-    return objectInstance()
   }
 
-  const collidePlayer = () => {
-    let playerPosition = player.getPosition()
-    let playerVelocity = player.getVelocity()
-    if (player.getX() < dimensions.x) {
-      playerPosition = Vector(dimensions.x, playerPosition.getY())
-      playerVelocity = Vector(
-        -playerVelocity.getX() / 10,
-        playerVelocity.getY()
+  const collideWorld: collideObjectMethodType = ({
+    position,
+    velocity,
+    width,
+    height
+  }) => {
+    let collideVector = Vector(0, 0)
+    if (dimensions.x > position.getX() + velocity.getX()) {
+      // should be inside (on left)
+      const overflow = Math.abs(
+        dimensions.x - (position.getX() + velocity.getX())
+      )
+      collideVector = collideVector.addVector(
+        velocity.add(-(velocity.getX() - overflow), 0)
       )
     }
-    if (player.getX() + player.getWidth() > dimensions.x + dimensions.width) {
-      playerPosition = Vector(
-        dimensions.x + dimensions.width - player.getWidth(),
-        playerPosition.getY()
+    if (
+      dimensions.x + dimensions.width <
+      position.getX() + velocity.getX() + width
+    ) {
+      // should be inside (on right)
+      const overflow = Math.abs(
+        dimensions.x +
+          dimensions.width -
+          (position.getX() + velocity.getX() + width)
       )
-      playerVelocity = Vector(
-        -playerVelocity.getX() / 10,
-        playerVelocity.getY()
+      collideVector = collideVector.addVector(
+        velocity.add(-(velocity.getX() + overflow), 0)
       )
     }
-    if (player.getY() < dimensions.y) {
-      playerPosition = Vector(playerPosition.getX(), dimensions.y)
-      playerVelocity = Vector(playerVelocity.getX(), -playerVelocity.getY() / 4)
-    }
-    if (player.getY() + player.getHeight() > dimensions.y + dimensions.height) {
-      playerPosition = Vector(
-        playerPosition.getX(),
-        dimensions.y + dimensions.height - player.getHeight()
+    if (dimensions.y > position.getY() + velocity.getY()) {
+      // should be inside (on top)
+      const overflow = Math.abs(
+        dimensions.y - (position.getY() + velocity.getY())
       )
-      playerVelocity = Vector(playerVelocity.getX(), -playerVelocity.getY() / 4)
+      collideVector = collideVector.addVector(
+        velocity.add(0, -(velocity.getY() - overflow))
+      )
+    }
+    if (
+      dimensions.y + dimensions.height <
+      position.getY() + velocity.getY() + height
+    ) {
+      // should be inside (on bottom)
+      const overflow = Math.abs(
+        dimensions.y +
+          dimensions.height -
+          (position.getY() + velocity.getY() + height)
+      )
+      collideVector = collideVector.addVector(
+        velocity.add(0, -(velocity.getY() + overflow))
+      )
     }
 
-    player.setPosition(playerPosition)
-    player.setVelocity(playerVelocity)
+    return collideVector
   }
 
   const update = (timestamp: number) => {
     // add gravity to player
-    player.addVelocity(gravity)
+    player.addGravity(gravityVector)
     // add friction
-    let playerVelocity = player.getVelocity()
-    playerVelocity = playerVelocity.setLength(
-      playerVelocity.getLength() - friction.getLength()
-    )
-    player.setVelocity(playerVelocity)
+    player.addFriction(frictionMultiplierVector)
 
-    player.update(timestamp)
-
-    collidePlayer()
+    player.update(timestamp, [collideWorld])
   }
 
   const render = (drawMethod: DrawMethodType) => {
@@ -81,18 +102,13 @@ const World = function () {
     player.render(drawMethod)
   }
 
-  const objectInstance = () => {
-    return {
-      getBackgroundColor: () => backgroundColor,
-      getDimensions: () => dimensions,
-      setDimensions,
-      getPlayer: () => player,
-      update,
-      render
-    }
+  return {
+    getBackgroundColor: () => backgroundColor,
+    setDimensions,
+    getPlayer: () => player,
+    update,
+    render
   }
-
-  return objectInstance()
 }
 
 export default World

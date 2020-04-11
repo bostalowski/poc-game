@@ -45,8 +45,8 @@ window.onload = () => {
       document.documentElement.clientHeight
     )
 
-    const worldWidth = document.documentElement.clientWidth * 0.75
-    const worldHeight = document.documentElement.clientHeight * 0.75
+    const worldWidth = document.documentElement.clientWidth * 0.95
+    const worldHeight = document.documentElement.clientHeight * 0.95
     const worldX = (document.documentElement.clientWidth - worldWidth) / 2
     const worldY = (document.documentElement.clientHeight - worldHeight) / 2
     game.getWorld().setDimensions(worldX, worldY, worldWidth, worldHeight)
@@ -71,25 +71,20 @@ window.onload = () => {
   }
 
   const update = (timestamp: number) => {
-    let playerVelocity = Vector(0, 0)
-
     if (controller.getUpButton().isActive()) {
-      playerVelocity = playerVelocity.addVector(Vector(0, -1))
     }
     if (controller.getDownButton().isActive()) {
-      playerVelocity = playerVelocity.addVector(Vector(0, 1))
     }
     if (controller.getLeftButton().isActive()) {
-      playerVelocity = playerVelocity.addVector(Vector(-2, 0))
+      game.getWorld().getPlayer().moveLeft()
     }
     if (controller.getRightButton().isActive()) {
-      playerVelocity = playerVelocity.addVector(Vector(2, 0))
+      game.getWorld().getPlayer().moveRight()
     }
     if (controller.getSpaceButton().isActive()) {
-      playerVelocity = playerVelocity.addVector(Vector(0, -15))
+      game.getWorld().getPlayer().jump()
     }
 
-    game.getWorld().getPlayer().addVelocity(playerVelocity)
     game.update(timestamp)
   }
 

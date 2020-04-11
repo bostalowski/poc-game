@@ -1,12 +1,14 @@
 interface SpritesProps {
-  imagePath: string,
-  frameNumber: number,
-  animationTime: number,
-  frameWidth: number,
+  imagePath: string
+  frameNumber: number
+  animationTime: number
+  frameWidth: number
   frameHeight: number
 }
 
-export type SpritesType = (props: SpritesProps) => {
+export type SpritesType = (
+  props: SpritesProps
+) => {
   getImage: () => HTMLImageElement
   getSX: () => number
   getSY: () => number
@@ -15,16 +17,17 @@ export type SpritesType = (props: SpritesProps) => {
   isLoaded: () => boolean
   isPlaying: () => boolean
   start: (currentTimestamp: number) => void
+  stop: () => void
   update: (currentTimestamp: number) => void
 }
 
-const Sprites: SpritesType = ({
+const Sprites: SpritesType = function ({
   imagePath,
   frameNumber,
   animationTime,
   frameWidth,
   frameHeight
-}) => {
+}) {
   let isLoaded = false
   const image = new Image()
   image.src = imagePath
@@ -42,12 +45,17 @@ const Sprites: SpritesType = ({
     isPlaying = true
   }
 
+  const stop = () => {
+    initTimestamp = 0
+    isPlaying = false
+  }
+
   const update = (currentTimestamp: number) => {
     const elapsedTime = currentTimestamp - initTimestamp
     currentStep = Math.floor(elapsedTime / frameTime) % frameNumber
     const x = currentStep * frameWidth
     const rowNumber = Math.floor(x / image.width)
-    sx = x - (image.width * rowNumber)
+    sx = x - image.width * rowNumber
     sy = frameHeight * rowNumber
   }
 
@@ -60,6 +68,7 @@ const Sprites: SpritesType = ({
     isLoaded: () => isLoaded,
     isPlaying: () => isPlaying,
     start,
+    stop,
     update
   }
 }
