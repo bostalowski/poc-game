@@ -11,9 +11,11 @@ import {
 const IdleSprites = require('../assets/sprites/character/idle.png').default
 const RunSprites = require('../assets/sprites/character/run.png').default
 const JumpSprites = require('../assets/sprites/character/jump.png').default
+const LandingSprites = require('../assets/sprites/character/landing.png')
+  .default
 
 const RUNNING_SPEED = 20
-const JUMPING_SPEED = 70
+const JUMPING_SPEED = 50
 
 const Player: PlayerType = function (x: number = 0, y: number = 0) {
   let position = Vector(x, y)
@@ -46,6 +48,13 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
       animationTime: 1,
       frameWidth: 17,
       frameHeight: 34
+    }),
+    landing: Sprites({
+      imagePath: LandingSprites,
+      frameNumber: 1,
+      animationTime: 1,
+      frameWidth: 20,
+      frameHeight: 35
     })
   }
 
@@ -130,7 +139,11 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
         currentStance = stances.run
       }
     } else {
-      currentStance = stances.jump
+      if (velocity.getY() <= 0) {
+        currentStance = stances.jump
+      } else {
+        currentStance = stances.landing
+      }
     }
 
     if (currentStance.isLoaded() && !currentStance.isPlaying()) {

@@ -1,5 +1,5 @@
 import World from './world'
-import { DrawMethodType } from './display'
+import { DrawMethodType } from './types'
 
 const Game = function () {
   const world = World()
