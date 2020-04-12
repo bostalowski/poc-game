@@ -15,7 +15,7 @@ const World: WorldType = function () {
     width: 0,
     height: 0
   }
-  const gravityVector = Vector(0, 10)
+  const gravityVector = Vector(0, 5)
   const frictionMultiplierVector = Vector(1, 1)
 
   const player = Player(300, 200)
