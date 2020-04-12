@@ -1,36 +1,19 @@
-import Vector, { VectorInterface } from '@tools/vector'
+import Vector from '@tools/vector'
 import Sprites from '@tools/sprites'
-import { DrawMethodType, Shape } from './display'
-import { collideObjectMethodType } from './world'
+import {
+  collideObjectMethodType,
+  DrawMethodType,
+  PlayerType,
+  Shape,
+  VectorInterface
+} from './types'
 
 const IdleSprites = require('../assets/sprites/character/idle.png').default
 const RunSprites = require('../assets/sprites/character/run.png').default
+const JumpSprites = require('../assets/sprites/character/jump.png').default
 
-export interface PlayerInterface {
-  getWidth: () => number
-  getHeight: () => number
-  getX: () => number
-  getY: () => number
-  getPosition: () => VectorInterface
-  setPosition: (vector: VectorInterface) => void
-  getVelocity: () => VectorInterface
-  setVelocity: (vector: VectorInterface) => void
-  moveLeft: () => void
-  moveRight: () => void
-  jump: () => void
-  addGravity: (vector: VectorInterface) => void
-  addFriction: (multiplierVector: VectorInterface) => void
-  update: (
-    timestamp: number,
-    collideObjects: Array<collideObjectMethodType>
-  ) => void
-  render: (drawMethod: DrawMethodType) => void
-}
-
-export type PlayerType = (x: number, y: number) => PlayerInterface
-
-const RUNNING_SPEED = 15
-const JUMPING_SPEED = 100
+const RUNNING_SPEED = 20
+const JUMPING_SPEED = 70
 
 const Player: PlayerType = function (x: number = 0, y: number = 0) {
   let position = Vector(x, y)
@@ -56,6 +39,13 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
       animationTime: 1000,
       frameWidth: 23,
       frameHeight: 35
+    }),
+    jump: Sprites({
+      imagePath: JumpSprites,
+      frameNumber: 1,
+      animationTime: 1,
+      frameWidth: 17,
+      frameHeight: 34
     })
   }
 
@@ -87,8 +77,10 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
   }
 
   const jump = () => {
-    isJumping = true
-    velocity = velocity.add(0, -JUMPING_SPEED)
+    if (!isJumping) {
+      isJumping = true
+      velocity = velocity.add(0, -JUMPING_SPEED)
+    }
   }
 
   const addGravity = (gravityVector: VectorInterface) => {
@@ -103,13 +95,42 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
     timestamp: number,
     collideObjects: Array<collideObjectMethodType>
   ) => {
-    // check action
-    if (velocity.getX() === 0) {
-      isRunning = false
-      currentStance = stances.idle
-    }
-    if (isRunning) {
-      currentStance = stances.run
+    ////////////////////
+    //// COLLISIONS ////
+    ////////////////////
+
+    collideObjects.forEach((collideObjectFunction) => {
+      const { collisionVelocityVector, isOnPlatform } = collideObjectFunction({
+        position,
+        velocity,
+        width,
+        height
+      })
+      velocity = velocity.addVector(collisionVelocityVector)
+      isJumping = !isOnPlatform
+    })
+
+    //////////////////
+    //// POSITION ////
+    //////////////////
+
+    position = position.add(velocity.getX(), velocity.getY())
+
+    /////////////////
+    //// STANCES ////
+    /////////////////
+
+    if (!isJumping) {
+      // if is on ground : idle or running
+      if (velocity.getX() === 0) {
+        isRunning = false
+        currentStance = stances.idle
+      }
+      if (isRunning) {
+        currentStance = stances.run
+      }
+    } else {
+      currentStance = stances.jump
     }
 
     if (currentStance.isLoaded() && !currentStance.isPlaying()) {
@@ -117,21 +138,12 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
     }
     currentStance.update(timestamp)
 
-    // collisionDetection
-    collideObjects.forEach((collideObjectFunction) => {
-      const collisionVelocityVector = collideObjectFunction({
-        position,
-        velocity,
-        width,
-        height
-      })
-      velocity = velocity.addVector(collisionVelocityVector)
-    })
-
-    position = position.add(velocity.getX(), velocity.getY())
-
-    // no inertia
-    velocity = Vector(0, 0)
+    // if on ground : no inertia
+    if (!isJumping) {
+      velocity = Vector(0, 0)
+    } else {
+      velocity = Vector(0, velocity.getY())
+    }
   }
 
   const render = (drawMethod: DrawMethodType) => {

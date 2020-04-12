@@ -1,25 +1,4 @@
-interface SpritesProps {
-  imagePath: string
-  frameNumber: number
-  animationTime: number
-  frameWidth: number
-  frameHeight: number
-}
-
-export type SpritesType = (
-  props: SpritesProps
-) => {
-  getImage: () => HTMLImageElement
-  getSX: () => number
-  getSY: () => number
-  getFrameWidth: () => number
-  getFrameHeight: () => number
-  isLoaded: () => boolean
-  isPlaying: () => boolean
-  start: (currentTimestamp: number) => void
-  stop: () => void
-  update: (currentTimestamp: number) => void
-}
+import { SpritesType } from '../types'
 
 const Sprites: SpritesType = function ({
   imagePath,

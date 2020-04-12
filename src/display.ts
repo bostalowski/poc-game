@@ -1,40 +1,16 @@
-export enum Shape {
-  rectangle = 'Rectangle',
-  circle = 'Circle',
-  sprites = 'Sprites'
-}
-
-interface DrawRectangleMethodProps {
-  x: number
-  y: number
-  width: number
-  height: number
-  color?: string
-}
-
-interface DrawSpritesMethodProps {
-  sprites: HTMLImageElement
-  sx: number
-  sy: number
-  dx: number
-  dy: number
-  width: number
-  height: number
-  size?: number
-  flip?: boolean
-}
-
-export type DrawRectangleMethodType = (props: DrawRectangleMethodProps) => void
-export type DrawSpritesMethodType = (props: DrawSpritesMethodProps) => void
-
-export type DrawMethodType = (
-  shape: Shape,
-  values: DrawRectangleMethodProps | DrawSpritesMethodProps
-) => void
+import {
+  DisplayType,
+  DrawMethodType,
+  DrawRectangleMethodProps,
+  DrawRectangleMethodType,
+  DrawSpritesMethodProps,
+  DrawSpritesMethodType,
+  Shape
+} from './types'
 
 /* This Display class contains the screen resize event handler and also handles
 drawing colors to the buffer and then to the display. */
-const Display = function (canvas: HTMLCanvasElement) {
+const Display: DisplayType = function (canvas: HTMLCanvasElement) {
   const displayBuffer = document.createElement('canvas').getContext('2d')
   const displayContext = canvas.getContext('2d')
   const backgroundColor = 'rgba(200,200,200)'
@@ -118,7 +94,6 @@ const Display = function (canvas: HTMLCanvasElement) {
   }
 
   return {
-    drawRectangle,
     getBackgroundColor: () => backgroundColor,
     draw,
     render,

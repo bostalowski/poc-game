@@ -1,8 +1,8 @@
 import Engine from './engine'
-import Display, { Shape } from './display'
+import Display from './display'
 import Game from './game'
 import Controller from './controller'
-import Vector from './tools/vector'
+import { Shape } from './types'
 
 /* This is the basic setup or "skeleton" of my program. It has three main parts:
 the controller, display, and game logic. It also has an engine which combines the
@@ -45,10 +45,21 @@ window.onload = () => {
       document.documentElement.clientHeight
     )
 
-    const worldWidth = document.documentElement.clientWidth * 0.95
-    const worldHeight = document.documentElement.clientHeight * 0.95
-    const worldX = (document.documentElement.clientWidth - worldWidth) / 2
-    const worldY = (document.documentElement.clientHeight - worldHeight) / 2
+    const preciseValue = (value: number) =>
+      Math.abs(parseFloat(value.toFixed(2))) < 0.1
+        ? 0
+        : parseFloat(value.toFixed(2))
+
+    const worldWidth = preciseValue(document.documentElement.clientWidth * 0.95)
+    const worldHeight = preciseValue(
+      document.documentElement.clientHeight * 0.95
+    )
+    const worldX = preciseValue(
+      (document.documentElement.clientWidth - worldWidth) / 2
+    )
+    const worldY = preciseValue(
+      (document.documentElement.clientHeight - worldHeight) / 2
+    )
     game.getWorld().setDimensions(worldX, worldY, worldWidth, worldHeight)
 
     render()
@@ -56,7 +67,7 @@ window.onload = () => {
 
   const render = () => {
     // render background
-    display.drawRectangle({
+    display.draw(Shape.rectangle, {
       x: 0,
       y: 0,
       width: document.documentElement.clientWidth,
