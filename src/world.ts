@@ -1,21 +1,11 @@
-import Player, { PlayerInterface } from './player'
-import { DrawMethodType, Shape } from './display'
-import Vector, { VectorInterface } from './tools/vector'
-
-export type collideObjectMethodType = (props: {
-  position: VectorInterface
-  velocity: VectorInterface
-  width: number
-  height: number
-}) => VectorInterface
-
-export type WorldType = () => {
-  getBackgroundColor: () => string
-  setDimensions: (x: number, y: number, width: number, height: number) => void
-  getPlayer: () => PlayerInterface
-  update: (timestamp: number) => void
-  render: (drawMethod: DrawMethodType) => void
-}
+import Player from './player'
+import Vector from './tools/vector'
+import {
+  collideObjectMethodType,
+  DrawMethodType,
+  Shape,
+  WorldType
+} from './types'
 
 const World: WorldType = function () {
   const backgroundColor = 'rgba(40,48,56)'
@@ -25,7 +15,7 @@ const World: WorldType = function () {
     width: 0,
     height: 0
   }
-  const gravityVector = Vector(0, 25)
+  const gravityVector = Vector(0, 10)
   const frictionMultiplierVector = Vector(1, 1)
 
   const player = Player(300, 200)
@@ -45,13 +35,15 @@ const World: WorldType = function () {
     width,
     height
   }) => {
-    let collideVector = Vector(0, 0)
+    let collisionVelocityVector = Vector(0, 0)
+    let isOnPlatform = false
+
     if (dimensions.x > position.getX() + velocity.getX()) {
       // should be inside (on left)
       const overflow = Math.abs(
         dimensions.x - (position.getX() + velocity.getX())
       )
-      collideVector = collideVector.addVector(
+      collisionVelocityVector = collisionVelocityVector.addVector(
         Vector(velocity.getX() - (velocity.getX() - overflow), 0)
       )
     }
@@ -65,7 +57,7 @@ const World: WorldType = function () {
           dimensions.width -
           (position.getX() + velocity.getX() + width)
       )
-      collideVector = collideVector.addVector(
+      collisionVelocityVector = collisionVelocityVector.addVector(
         Vector(velocity.getX() - (velocity.getX() + overflow), 0)
       )
     }
@@ -74,7 +66,7 @@ const World: WorldType = function () {
       const overflow = Math.abs(
         dimensions.y - (position.getY() + velocity.getY())
       )
-      collideVector = collideVector.addVector(
+      collisionVelocityVector = collisionVelocityVector.addVector(
         Vector(0, velocity.getY() - (velocity.getY() - overflow))
       )
     }
@@ -88,12 +80,24 @@ const World: WorldType = function () {
           dimensions.height -
           (position.getY() + velocity.getY() + height)
       )
-      collideVector = collideVector.addVector(
+      collisionVelocityVector = collisionVelocityVector.addVector(
         Vector(0, velocity.getY() - (velocity.getY() + overflow))
       )
     }
 
-    return collideVector
+    const newPosition = Vector(
+      position.getX() + velocity.getX() + collisionVelocityVector.getX(),
+      position.getY() + velocity.getY() + collisionVelocityVector.getY()
+    )
+
+    if (newPosition.getY() + height === dimensions.y + dimensions.height) {
+      isOnPlatform = true
+    }
+
+    return {
+      collisionVelocityVector,
+      isOnPlatform
+    }
   }
 
   const update = (timestamp: number) => {
