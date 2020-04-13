@@ -3,8 +3,8 @@ import {
   DrawMethodType,
   DrawRectangleMethodProps,
   DrawRectangleMethodType,
-  DrawSpritesMethodProps,
-  DrawSpritesMethodType,
+  DrawImageMethodProps,
+  DrawImageMethodType,
   Shape
 } from './types'
 
@@ -26,32 +26,33 @@ const Display: DisplayType = function (canvas: HTMLCanvasElement) {
     displayBuffer.fillRect(x, y, width, height)
   }
 
-  const drawSprite: DrawSpritesMethodType = ({
-    sprites,
+  const drawImage: DrawImageMethodType = ({
+    image,
     sx,
     sy,
-    dx,
-    dy,
     width,
     height,
-    size = 1,
+    dx,
+    dy,
+    dw,
+    dh,
     flip = false
   }) => {
     displayBuffer.save()
     if (flip) {
-      displayBuffer.translate(dx + width * size, dy)
+      displayBuffer.translate(dx + dw, dy)
       displayBuffer.scale(-1, 1)
     }
     displayBuffer.drawImage(
-      sprites,
+      image,
       sx,
       sy,
       width,
       height,
       flip ? 0 : dx,
       flip ? 0 : dy,
-      width * size,
-      height * size
+      dw,
+      dh
     )
     displayBuffer.restore()
   }
@@ -60,8 +61,8 @@ const Display: DisplayType = function (canvas: HTMLCanvasElement) {
     if (shape === Shape.rectangle) {
       drawRectangle(values as DrawRectangleMethodProps)
     }
-    if (shape === Shape.sprites) {
-      drawSprite(values as DrawSpritesMethodProps)
+    if (shape === Shape.image) {
+      drawImage(values as DrawImageMethodProps)
     }
   }
 

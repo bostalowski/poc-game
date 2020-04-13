@@ -161,15 +161,16 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
 
   const render = (drawMethod: DrawMethodType) => {
     if (currentStance.isLoaded()) {
-      drawMethod(Shape.sprites, {
-        sprites: currentStance.getImage(),
+      drawMethod(Shape.image, {
+        image: currentStance.getImage(),
         sx: currentStance.getSX(),
         sy: currentStance.getSY(),
-        dx: position.getX(),
-        dy: position.getY(),
         width: currentStance.getFrameWidth(),
         height: currentStance.getFrameHeight(),
-        size,
+        dx: position.getX(),
+        dy: position.getY(),
+        dw: currentStance.getFrameWidth() * size,
+        dh: currentStance.getFrameHeight() * size,
         flip: direction.getX() === -1
       })
     }

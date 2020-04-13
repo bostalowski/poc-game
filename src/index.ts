@@ -2,6 +2,7 @@ import Engine from './engine'
 import Display from './display'
 import Game from './game'
 import Controller from './controller'
+import Vector from '@tools/vector'
 import { Shape } from './types'
 
 /* This is the basic setup or "skeleton" of my program. It has three main parts:
@@ -45,22 +46,13 @@ window.onload = () => {
       document.documentElement.clientHeight
     )
 
-    const preciseValue = (value: number) =>
-      Math.abs(parseFloat(value.toFixed(2))) < 0.1
-        ? 0
-        : parseFloat(value.toFixed(2))
-
-    const worldWidth = preciseValue(document.documentElement.clientWidth * 0.95)
-    const worldHeight = preciseValue(
-      document.documentElement.clientHeight * 0.95
-    )
-    const worldX = preciseValue(
-      (document.documentElement.clientWidth - worldWidth) / 2
-    )
-    const worldY = preciseValue(
-      (document.documentElement.clientHeight - worldHeight) / 2
-    )
-    game.getWorld().setDimensions(worldX, worldY, worldWidth, worldHeight)
+    game
+      .getWorld()
+      .setDimensions(
+        Vector(0, 0),
+        document.documentElement.clientWidth,
+        document.documentElement.clientHeight
+      )
 
     render()
   }
