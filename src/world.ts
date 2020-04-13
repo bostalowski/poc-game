@@ -8,6 +8,7 @@ import {
   VectorInterface,
   WorldType
 } from './types'
+import Platform from './platform'
 
 const World: WorldType = function () {
   const backgroundColor = 'rgba(40,48,56)'
@@ -20,7 +21,8 @@ const World: WorldType = function () {
   const frictionMultiplierVector = Vector(1, 1)
 
   const background = Background()
-  const player = Player(300, 200)
+  const player = Player(10, 0)
+  const platforms = [Platform(Vector(300, 300), 200, 100)]
 
   const setDimensions = (
     position: VectorInterface,
@@ -45,7 +47,7 @@ const World: WorldType = function () {
         dimensions.position.getX() - (position.getX() + velocity.getX())
       )
       collisionVelocityVector = collisionVelocityVector.addVector(
-        Vector(velocity.getX() - (velocity.getX() - overflow), 0)
+        Vector(overflow, 0)
       )
     }
     if (
@@ -59,7 +61,7 @@ const World: WorldType = function () {
           (position.getX() + velocity.getX() + width)
       )
       collisionVelocityVector = collisionVelocityVector.addVector(
-        Vector(velocity.getX() - (velocity.getX() + overflow), 0)
+        Vector(-overflow, 0)
       )
     }
     if (dimensions.position.getY() > position.getY() + velocity.getY()) {
@@ -68,7 +70,7 @@ const World: WorldType = function () {
         dimensions.position.getY() - (position.getY() + velocity.getY())
       )
       collisionVelocityVector = collisionVelocityVector.addVector(
-        Vector(0, velocity.getY() - (velocity.getY() - overflow))
+        Vector(0, overflow)
       )
     }
     if (
@@ -82,7 +84,7 @@ const World: WorldType = function () {
           (position.getY() + velocity.getY() + height)
       )
       collisionVelocityVector = collisionVelocityVector.addVector(
-        Vector(0, velocity.getY() - (velocity.getY() + overflow))
+        Vector(0, -overflow)
       )
     }
 
@@ -112,7 +114,10 @@ const World: WorldType = function () {
     // add friction
     player.addFriction(frictionMultiplierVector)
 
-    player.update(timestamp, [collideWorld])
+    player.update(timestamp, [
+      collideWorld,
+      ...platforms.map((platform) => platform.collideObject)
+    ])
   }
 
   const render = (drawMethod: DrawMethodType) => {
@@ -124,6 +129,7 @@ const World: WorldType = function () {
     })
     background.render(drawMethod)
     player.render(drawMethod)
+    platforms.forEach((platform) => platform.render(drawMethod))
   }
 
   return {

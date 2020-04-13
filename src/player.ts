@@ -107,7 +107,7 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
     ////////////////////
     //// COLLISIONS ////
     ////////////////////
-
+    let isOnPlatformList: Array<boolean> = []
     collideObjects.forEach((collideObjectFunction) => {
       const { collisionVelocityVector, isOnPlatform } = collideObjectFunction({
         position,
@@ -116,8 +116,10 @@ const Player: PlayerType = function (x: number = 0, y: number = 0) {
         height
       })
       velocity = velocity.addVector(collisionVelocityVector)
-      isJumping = !isOnPlatform
+      isOnPlatformList.push(isOnPlatform)
     })
+
+    isJumping = !isOnPlatformList.some((isOnPlatform) => isOnPlatform === true)
 
     //////////////////
     //// POSITION ////
