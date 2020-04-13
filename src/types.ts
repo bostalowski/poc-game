@@ -1,6 +1,6 @@
 export enum Shape {
   rectangle = 'Rectangle',
-  sprites = 'Sprites'
+  image = 'Image'
 }
 
 export interface DrawRectangleMethodProps {
@@ -11,24 +11,25 @@ export interface DrawRectangleMethodProps {
   color?: string
 }
 
-export interface DrawSpritesMethodProps {
-  sprites: HTMLImageElement
+export interface DrawImageMethodProps {
+  image: HTMLImageElement
   sx: number
   sy: number
-  dx: number
-  dy: number
   width: number
   height: number
-  size?: number
+  dx: number
+  dy: number
+  dw: number
+  dh: number
   flip?: boolean
 }
 
 export type DrawRectangleMethodType = (props: DrawRectangleMethodProps) => void
-export type DrawSpritesMethodType = (props: DrawSpritesMethodProps) => void
+export type DrawImageMethodType = (props: DrawImageMethodProps) => void
 
 export type DrawMethodType = (
   shape: Shape,
-  values: DrawRectangleMethodProps | DrawSpritesMethodProps
+  values: DrawRectangleMethodProps | DrawImageMethodProps
 ) => void
 
 export type DisplayType = (
@@ -52,7 +53,11 @@ export type collideObjectMethodType = (props: {
 
 export type WorldType = () => {
   getBackgroundColor: () => string
-  setDimensions: (x: number, y: number, width: number, height: number) => void
+  setDimensions: (
+    position: VectorInterface,
+    width: number,
+    height: number
+  ) => void
   getPlayer: () => PlayerInterface
   update: (timestamp: number) => void
   render: (drawMethod: DrawMethodType) => void
@@ -121,4 +126,16 @@ export type SpritesType = (
   start: (currentTimestamp: number) => void
   stop: () => void
   update: (currentTimestamp: number) => void
+}
+
+export type BackgroundType = () => {
+  update: (
+    timestamp: number,
+    dimensions: {
+      position: VectorInterface
+      width: number
+      height: number
+    }
+  ) => void
+  render: (drawMethod: DrawMethodType) => void
 }
